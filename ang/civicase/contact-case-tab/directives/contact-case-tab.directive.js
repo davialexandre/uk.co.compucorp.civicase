@@ -66,8 +66,9 @@
         name: 'related',
         title: ts('Other cases for this contact'),
         filterParams: {
-          case_manager: $scope.contactId,
           'case_type_id.case_type_category': $scope.caseTypeCategory,
+          contact_id: { '!=': $scope.contactId },
+          contact_involved: $scope.contactId,
           is_deleted: 0
         },
         showContactRole: true
