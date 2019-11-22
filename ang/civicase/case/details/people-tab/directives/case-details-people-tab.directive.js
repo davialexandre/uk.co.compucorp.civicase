@@ -61,7 +61,6 @@
     var clients = _.indexBy($scope.item.client, 'contact_id');
     var item = $scope.item;
     var relTypes = RelationshipType.getAll();
-    var relTypesByName = _.indexBy(relTypes, 'name_b_a');
     $scope.ts = ts;
 
     $scope.allowMultipleCaseClients = allowMultipleCaseClients;
@@ -583,7 +582,9 @@ included in the confirmation dialog.
      * @param {object} role role
      */
     function formatRole (role) {
-      var relType = relTypesByName[role.name];
+      var relType = _.find(relTypes, function (relation) {
+        return relation.name_a_b === role.name || relation.name_b_a === role.name;
+      });
       role.role = relType.label_b_a;
       role.contact_type = relType.contact_type_b;
       role.contact_sub_type = relType.contact_sub_type_b;
