@@ -73,11 +73,12 @@
         ]));
       });
 
-      it('requests non deleted cases where the contact is a manager', () => {
+      it('requests non deleted cases where the contact has a role other than client', () => {
         expect(crmApi.calls.allArgs()).toContain(jasmine.arrayContaining([
           jasmine.objectContaining({
             cases: ['Case', 'getcaselist', jasmine.objectContaining({
-              case_manager: mockContactId,
+              contact_id: { '!=': $scope.contactId },
+              contact_involved: $scope.contactId,
               'case_type_id.case_type_category': 2,
               is_deleted: 0
             })]
