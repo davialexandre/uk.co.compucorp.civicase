@@ -148,6 +148,10 @@ class CRM_Civicase_Hook_PermissionCheck_CaseCategory {
     }
 
     if ($isCasePage || $isCaseContactTabPage) {
+      if (CRM_Utils_Request::retrieve('caseId', 'Integer')) {
+        return $this->getCaseCategoryNameFromCaseIdInUrl('caseId');
+      }
+
       return $this->getCaseCategoryFromUrl();
     }
 
