@@ -2,7 +2,7 @@
 (function ($, _, moment) {
   describe('dashboardTabController', function () {
     var $controller, $rootScope, $scope, crmApi, formatActivity, formatCase,
-      mockedCases, ActivityStatusType;
+      mockedCases, ActivityStatusType, CaseTypesData;
 
     /**
      * Generate Mocked Cases
@@ -13,9 +13,9 @@
       });
     }
 
-    beforeEach(module('civicase.templates', 'civicase', 'crmUtil'));
+    beforeEach(module('civicase.templates', 'civicase', 'crmUtil', 'civicase.data'));
     beforeEach(inject(function (_$controller_, _$rootScope_, _crmApi_,
-      _formatActivity_, _formatCase_, _ActivityStatusType_) {
+      _formatActivity_, _formatCase_, _ActivityStatusType_, _CaseTypesMockData_) {
       $controller = _$controller_;
       $rootScope = _$rootScope_;
       crmApi = _crmApi_;
@@ -23,6 +23,7 @@
       formatCase = _formatCase_;
       ActivityStatusType = _ActivityStatusType_;
       $scope = $rootScope.$new();
+      CaseTypesData = _CaseTypesMockData_.get();
 
       $scope.filters = { caseRelationshipType: 'all' };
       $scope.activityFilters = {
@@ -218,14 +219,19 @@
           });
 
           describe('when invoked', function () {
-            var $location, mockCase;
+            let $location, mockCase, caseType;
 
             beforeEach(inject(function (_$location_) {
+              const caseTypeId = _.chain(CaseTypesData).keys().sample().value();
+              caseType = CaseTypesData[caseTypeId];
               $location = _$location_;
-              mockCase = { id: _.random(1, 10) };
+              mockCase = {
+                id: _.random(1, 10),
+                case_type_id: caseTypeId
+              };
 
               spyOn($location, 'path').and.callThrough();
-              spyOn($location, 'search');
+              spyOn($location, 'search').and.callThrough();
 
               $scope.newCasesPanel.custom.caseClick(mockCase);
             }));
@@ -233,6 +239,12 @@
             it('redirects to the individual case details page', function () {
               expect($location.path).toHaveBeenCalledWith('case/list');
               expect($location.search).toHaveBeenCalledWith('caseId', mockCase.id);
+            });
+
+            it('passes the case type active status to the manage case page', () => {
+              expect($location.search).toHaveBeenCalledWith('cf', JSON.stringify({
+                'case_type_id.is_active': caseType.is_active
+              }));
             });
           });
         });
