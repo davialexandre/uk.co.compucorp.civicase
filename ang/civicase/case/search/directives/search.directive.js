@@ -70,20 +70,6 @@
     }());
 
     /**
-     * Check/Uncheck `Show deleted` filters
-     *
-     * @param {object} $event - event object of Event API
-     */
-    $scope.toggleIsDeleted = function ($event) {
-      var pressedSpaceOrEnter = $event.type === 'keydown' && ($event.keyCode === 32 || $event.keyCode === 13);
-
-      if ($event.type === 'click' || pressedSpaceOrEnter) {
-        $scope.filters.is_deleted = !$scope.filters.is_deleted;
-        $event.preventDefault();
-      }
-    };
-
-    /**
      * Show filter only when not hidden
      * This is configured from the backend
      *
