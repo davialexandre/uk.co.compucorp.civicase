@@ -177,4 +177,7 @@ function set_custom_fields_info_to_js_vars(&$options) {
 return [
   'js' => get_base_js_files(),
   'settings' => $options,
+  'partials' => [
+    'ang/civicase-base',
+  ],
 ];
