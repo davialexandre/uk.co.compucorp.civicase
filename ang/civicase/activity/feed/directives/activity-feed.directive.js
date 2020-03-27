@@ -75,6 +75,8 @@
     var activityStartingOffset = 0;
     var caseId = $scope.params ? $scope.params.case_id : null;
     var pageNum = { down: 0, up: 0 };
+    var activitySets = $scope.caseTypeId &&
+      CaseType.getById($scope.caseTypeId).definition.activitySets;
 
     $scope.filters = {};
     $scope.isMonthNavVisible = true;
@@ -87,7 +89,7 @@
     $scope.bulkAllowed = $scope.showBulkActions && BulkActions.isAllowed();
     $scope.selectedActivities = [];
     $scope.viewingActivity = {};
-    $scope.caseTimelines = $scope.caseTypeId ? _.sortBy(CaseType.getAll()[$scope.caseTypeId].definition.activitySets, 'label') : [];
+    $scope.caseTimelines = $scope.caseTypeId ? _.sortBy(activitySets, 'label') : [];
     $scope.refreshAll = refreshAll;
     $scope.showSpinner = { up: false, down: false };
 

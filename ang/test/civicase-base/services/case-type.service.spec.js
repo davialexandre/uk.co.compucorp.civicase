@@ -47,6 +47,20 @@
       });
     });
 
+    describe('when getting a case type by id', () => {
+      let expectedCaseType, returnedCaseType;
+
+      beforeEach(() => {
+        const caseTypeId = _.chain(CaseTypesData).keys().sample().value();
+        expectedCaseType = CaseTypesData[caseTypeId];
+        returnedCaseType = CaseType.getById(caseTypeId);
+      });
+
+      it('returns the matching case type', () => {
+        expect(returnedCaseType).toEqual(expectedCaseType);
+      });
+    });
+
     describe('when getting the titles for case types using their name', () => {
       let returnedTitles;
 
