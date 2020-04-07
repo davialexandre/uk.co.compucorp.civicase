@@ -58,7 +58,7 @@
 
     $scope.areAllStatusesHidden = areAllStatusesHidden;
     $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
-    $scope.toggleBrekdownVisibility = toggleBrekdownVisibility;
+    $scope.toggleBreakdownVisibility = toggleBreakdownVisibility;
     $scope.toggleStatusVisibility = toggleStatusVisibility;
 
     (function init () {
@@ -204,7 +204,7 @@
     /**
      * Toggles the visibility of the breakdown dropdown
      */
-    function toggleBrekdownVisibility () {
+    function toggleBreakdownVisibility () {
       $scope.showBreakdown = !$scope.showBreakdown;
     }
 
