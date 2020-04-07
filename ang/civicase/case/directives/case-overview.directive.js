@@ -56,7 +56,10 @@
     $scope.hiddenCaseStatuses = {};
     $scope.summaryData = [];
 
+    $scope.areAllStatusesHidden = areAllStatusesHidden;
     $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
+    $scope.toggleBrekdownVisibility = toggleBrekdownVisibility;
+    $scope.toggleStatusVisibility = toggleStatusVisibility;
 
     (function init () {
       $scope.$watch('caseFilter', caseFilterWatcher, true);
@@ -68,11 +71,11 @@
      *
      * @returns {boolean} true when all statuses are hidden.
      */
-    $scope.areAllStatusesHidden = function () {
+    function areAllStatusesHidden () {
       return _.filter($scope.caseStatuses, function (status) {
         return !status.isHidden;
       }).length === 0;
-    };
+    }
 
     /**
      * Toggle status visibility.
@@ -80,19 +83,19 @@
      * @param {document#event:mousedown} $event the toggle DOM event.
      * @param {number} caseStatusId the id for the case status to hide or show.
      */
-    $scope.toggleStatusVisibility = function ($event, caseStatusId) {
+    function toggleStatusVisibility ($event, caseStatusId) {
       $scope.hiddenCaseStatuses[caseStatusId] = !$scope.hiddenCaseStatuses[caseStatusId];
 
       storeHiddenCaseStatuses();
       $event.stopPropagation();
-    };
+    }
 
     /**
      * Toggles the visibility of the breakdown dropdown
      */
-    $scope.toggleBrekdownVisibility = function () {
+    function toggleBrekdownVisibility () {
       $scope.showBreakdown = !$scope.showBreakdown;
-    };
+    }
 
     /**
      * Watcher function for caseFilter
