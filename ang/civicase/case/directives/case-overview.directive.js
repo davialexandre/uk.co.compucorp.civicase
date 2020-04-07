@@ -58,12 +58,6 @@
       .value();
 
     (function init () {
-      getCaseTypes();
-      // We hide the breakdown when there's only one case type
-      if ($scope.caseTypesLength < 2) {
-        $scope.showBreakdown = false;
-      }
-
       $scope.$watch('caseFilter', caseFilterWatcher, true);
       loadHiddenCaseStatuses();
     }());
