@@ -3,13 +3,14 @@
   describe('CaseOverview', function () {
     var $compile, $provide, $q, $rootScope, $scope, BrowserCache,
       CasesOverviewStats, crmApi, element, targetElementScope,
-      CaseStatus;
+      CaseStatus, CaseType;
 
     beforeEach(module('civicase.data', 'civicase', 'civicase.templates', function (_$provide_) {
       $provide = _$provide_;
     }));
 
-    beforeEach(inject(function (_$compile_, _$q_, _$rootScope_, BrowserCacheMock, _crmApi_, _CasesOverviewStatsData_, _CaseStatus_) {
+    beforeEach(inject(function (_$compile_, _$q_, _$rootScope_, BrowserCacheMock,
+      _crmApi_, _CasesOverviewStatsData_, _CaseStatus_, _CaseType_) {
       $compile = _$compile_;
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -18,6 +19,7 @@
       CasesOverviewStats = _CasesOverviewStatsData_.get();
       BrowserCache = BrowserCacheMock;
       CaseStatus = _CaseStatus_;
+      CaseType = _CaseType_;
 
       BrowserCache.get.and.returnValue([1, 3]);
       $provide.value('BrowserCache', BrowserCache);
@@ -71,6 +73,67 @@
           'case_type_id.case_type_category': 'cases',
           case_type_id: [1, 2]
         }]]);
+      });
+    });
+
+    describe('Case Statuses', () => {
+      let expectedCaseStatuses;
+
+      describe('when loading a subset of case types', () => {
+        beforeEach(() => {
+          const sampleCaseStatuses = _.sample(CaseStatus.getAll(), 2);
+          const sampleCaseTypes = _.sample(CaseType.getAll(), 2);
+
+          sampleCaseTypes[0].definition.statuses = [sampleCaseStatuses[0].name];
+          sampleCaseTypes[1].definition.statuses = [sampleCaseStatuses[1].name];
+
+          expectedCaseStatuses = _.chain(sampleCaseStatuses)
+            .sortBy('weight')
+            .indexBy('value')
+            .value();
+
+          crmApi.and.callFake((entity) => {
+            const response = entity === 'CaseType'
+              ? { values: sampleCaseTypes }
+              : [CasesOverviewStats];
+
+            return $q.resolve(response);
+          });
+
+          compileDirective({});
+        });
+
+        it('only displays the case statuses belonging to the case types subset', () => {
+          expect(element.isolateScope().caseStatuses).toEqual(expectedCaseStatuses);
+        });
+      });
+
+      describe('when loading a case type that supports al statuses', () => {
+        beforeEach(() => {
+          const allCaseStatuses = CaseStatus.getAll();
+          const caseType = _.sample(CaseType.getAll());
+
+          delete caseType.definition.statuses;
+
+          expectedCaseStatuses = _.chain(allCaseStatuses)
+            .sortBy('weight')
+            .indexBy('value')
+            .value();
+
+          crmApi.and.callFake((entity) => {
+            const response = entity === 'CaseType'
+              ? { values: [caseType] }
+              : [CasesOverviewStats];
+
+            return $q.resolve(response);
+          });
+
+          compileDirective({});
+        });
+
+        it('only displays all case statuses', () => {
+          expect(element.isolateScope().caseStatuses).toEqual(expectedCaseStatuses);
+        });
       });
     });
 

@@ -49,14 +49,14 @@
   function civicaseCaseOverviewController ($scope, crmApi, BrowserCache, CaseStatus, CaseType) {
     var BROWSER_CACHE_IDENTIFIER = 'civicase.CaseOverview.hiddenCaseStatuses';
     var MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN = 1;
+    var allCaseStatusNames = _.map(CaseStatus.getAll(), 'name');
+    var caseStatusesIndexedByName = _.indexBy(CaseStatus.getAll(), 'name');
 
-    $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
+    $scope.caseStatuses = [];
     $scope.hiddenCaseStatuses = {};
     $scope.summaryData = [];
-    $scope.caseStatuses = _.chain(CaseStatus.getAll())
-      .sortBy(function (status) { return status.weight; })
-      .indexBy('weight')
-      .value();
+
+    $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
 
     (function init () {
       $scope.$watch('caseFilter', caseFilterWatcher, true);
@@ -103,11 +103,52 @@
       loadStatsData(caseFilters);
       loadCaseTypes(caseFilters)
         .then(function () {
+          var caseStatusNames = getCaseStatusNamesBelongingToCaseTypes($scope.caseTypes);
+
           $scope.showBreakdown = $scope.caseTypes.length <=
             MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN;
+          $scope.caseStatuses = getSortedCaseStatusesByName(caseStatusNames);
 
           $scope.$emit('civicase::custom-scrollbar::recalculate');
         });
+    }
+
+    /**
+     * Given a list of case types, it will return a unique list of
+     * case status names as defined for each one of the case types.
+     *
+     * Note: When a case type supports all statuses, it does not store any status
+     * names under `definition.statuses`. If the statuses definition is empty we
+     * must assume the case supports all statuses.
+     *
+     * @param {object[]} caseTypes a list of case type objects.
+     * @returns {string[]} a list of case sttus names.
+     */
+    function getCaseStatusNamesBelongingToCaseTypes (caseTypes) {
+      return _.chain(caseTypes)
+        .map(function (caseType) {
+          return caseType.definition.statuses
+            ? caseType.definition.statuses
+            : allCaseStatusNames;
+        })
+        .flatten()
+        .unique()
+        .value();
+    }
+
+    /**
+     * @param {string[]} caseStatusNames a list of case status names.
+     * @returns {object[]} the full case status details belonging to the
+     *   given case status names.
+     */
+    function getSortedCaseStatusesByName (caseStatusNames) {
+      return _.chain(caseStatusNames)
+        .map(function (caseStatusName) {
+          return caseStatusesIndexedByName[caseStatusName];
+        })
+        .sortBy('weight')
+        .indexBy('value')
+        .value();
     }
 
     /**
