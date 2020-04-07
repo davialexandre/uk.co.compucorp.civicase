@@ -14,9 +14,9 @@
               <ul class="dropdown-menu" role="menu">
                 <li ng-repeat="status in caseStatuses">
                   <a class="civicase__checkbox-container"
-                    href ng-click="toggleStatusVisibility($event, $index)">
+                    href ng-click="toggleStatusVisibility($event, status.value)">
                     <span class="civicase__checkbox">
-                      <i ng-if="!status.isHidden" class="civicase__checkbox--checked material-icons">check_box</i>
+                      <i ng-if="!hiddenCaseStatuses[status.value]" class="civicase__checkbox--checked material-icons">check_box</i>
                     </span>
                     <span>
                       {{ status.label }}
@@ -36,7 +36,7 @@
         </div>
         <div
           class="civicase__case-overview__flow-status civicase__case-overview__flow-status--hoverable"
-          ng-if="!status.isHidden"
+          ng-if="!hiddenCaseStatuses[status.value]"
           ng-repeat="status in caseStatuses"
           uib-popover="{{ status.label }}"
           popover-trigger="'mouseenter'"
@@ -82,7 +82,7 @@
         </div>
         <div
           class="civicase__case-overview__breakdown-field"
-          ng-if="!status.isHidden"
+          ng-if="!hiddenCaseStatuses[status.value]"
           ng-repeat="status in caseStatuses">
           <a ng-href="{{ linkToManageCase(caseType.name, status.value) }}">
             {{ summaryData[caseType.id][status.value] || '0' }}

@@ -50,6 +50,7 @@
     var BROWSER_CACHE_IDENTIFIER = 'civicase.CaseOverview.hiddenCaseStatuses';
 
     $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
+    $scope.hiddenCaseStatuses = {};
     $scope.summaryData = [];
     $scope.caseStatuses = _.chain(CaseStatus.getAll())
       .sortBy(function (status) { return status.weight; })
@@ -79,13 +80,14 @@
     };
 
     /**
-     * Toggle status view
+     * Toggle status visibility.
      *
      * @param {document#event:mousedown} $event the toggle DOM event.
-     * @param {number} index of the case status
+     * @param {number} caseStatusId the id for the case status to hide or show.
      */
-    $scope.toggleStatusVisibility = function ($event, index) {
-      $scope.caseStatuses[index + 1].isHidden = !$scope.caseStatuses[index + 1].isHidden;
+    $scope.toggleStatusVisibility = function ($event, caseStatusId) {
+      $scope.hiddenCaseStatuses[caseStatusId] = !$scope.hiddenCaseStatuses[caseStatusId];
+
       storeHiddenCaseStatuses();
       $event.stopPropagation();
     };
@@ -110,10 +112,11 @@
      * previously hidden and marks them as such.
      */
     function loadHiddenCaseStatuses () {
-      var hiddenCaseStatuses = BrowserCache.get(BROWSER_CACHE_IDENTIFIER, []);
+      var hiddenCaseStatusesIds = BrowserCache.get(BROWSER_CACHE_IDENTIFIER, []);
+      $scope.hiddenCaseStatuses = {};
 
-      hiddenCaseStatuses.forEach(function (caseStatusId) {
-        $scope.caseStatuses[caseStatusId].isHidden = true;
+      _.forEach(hiddenCaseStatusesIds, function (caseStatusId) {
+        $scope.hiddenCaseStatuses[caseStatusId] = true;
       });
     }
 
@@ -160,9 +163,9 @@
      * hidden.
      */
     function storeHiddenCaseStatuses () {
-      var hiddenCaseStatusesIds = _.chain($scope.caseStatuses)
-        .pick(function (caseStatus, key) {
-          return caseStatus.isHidden;
+      var hiddenCaseStatusesIds = _.chain($scope.hiddenCaseStatuses)
+        .pick(function (caseStatusIsHidden) {
+          return caseStatusIsHidden;
         })
         .keys()
         .value();

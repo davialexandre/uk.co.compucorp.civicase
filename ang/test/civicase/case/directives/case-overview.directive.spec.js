@@ -74,25 +74,29 @@
       });
     });
 
-    describe('Case Status', function () {
+    describe('Case Status visibility', function () {
       describe('when the component loads', function () {
         it('requests the case status that are hidden stored in the browser cache', function () {
           expect(BrowserCache.get).toHaveBeenCalledWith('civicase.CaseOverview.hiddenCaseStatuses', []);
         });
 
         it('hides the case statuses marked as hidden by the browser cache', function () {
-          expect($scope.caseStatuses[1].isHidden).toBe(true);
-          expect($scope.caseStatuses[3].isHidden).toBe(true);
+          expect(element.isolateScope().hiddenCaseStatuses).toEqual({
+            1: true,
+            3: true
+          });
         });
       });
 
       describe('when marking a status as hidden', function () {
         beforeEach(function () {
-          $scope.caseStatuses[1].isHidden = true;
-          $scope.caseStatuses[2].isHidden = false;
-          $scope.caseStatuses[3].isHidden = true;
+          element.isolateScope().hiddenCaseStatuses = {
+            1: true,
+            2: false,
+            3: true
+          };
 
-          element.isolateScope().toggleStatusVisibility($.Event(), 1); // disables the case status #2
+          element.isolateScope().toggleStatusVisibility($.Event(), 2);
         });
 
         it('stores the hidden case statuses including the new one', function () {
@@ -102,11 +106,13 @@
 
       describe('when marking a status as enabled', function () {
         beforeEach(function () {
-          $scope.caseStatuses[1].isHidden = true;
-          $scope.caseStatuses[2].isHidden = false;
-          $scope.caseStatuses[3].isHidden = true;
+          element.isolateScope().hiddenCaseStatuses = {
+            1: true,
+            2: false,
+            3: true
+          };
 
-          element.isolateScope().toggleStatusVisibility($.Event(), 0); // enables the case status #1
+          element.isolateScope().toggleStatusVisibility($.Event(), 1);
         });
 
         it('stores the hidden case statuses including the new one', function () {
