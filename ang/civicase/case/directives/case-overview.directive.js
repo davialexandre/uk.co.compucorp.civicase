@@ -48,6 +48,7 @@
    */
   function civicaseCaseOverviewController ($scope, crmApi, BrowserCache, CaseStatus, CaseType) {
     var BROWSER_CACHE_IDENTIFIER = 'civicase.CaseOverview.hiddenCaseStatuses';
+    var MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN = 1;
 
     $scope.getItemsForCaseType = CaseType.getItemsForCaseType;
     $scope.hiddenCaseStatuses = {};
@@ -95,10 +96,18 @@
 
     /**
      * Watcher function for caseFilter
+     *
+     * @param {object} caseFilters parameters to use for filtering the stats data.
      */
-    function caseFilterWatcher () {
-      getCaseTypes();
-      loadStatsData();
+    function caseFilterWatcher (caseFilters) {
+      loadStatsData(caseFilters);
+      loadCaseTypes(caseFilters)
+        .then(function () {
+          $scope.showBreakdown = $scope.caseTypes.length <=
+            MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN;
+
+          $scope.$emit('civicase::custom-scrollbar::recalculate');
+        });
     }
 
     /**
@@ -116,11 +125,13 @@
 
     /**
      * Loads Stats data
+     *
+     * @param {object} caseFilters parameters to use for filtering the stats data.
      */
-    function loadStatsData () {
+    function loadStatsData (caseFilters) {
       var apiCalls = [];
 
-      var params = angular.copy($scope.caseFilter || {});
+      var params = angular.copy(caseFilters || {});
       // status id should not be added to getstats,
       // because case overview section shows all statuses
       delete params.status_id;
@@ -134,21 +145,20 @@
     /**
      * Get Case Types based on filters
      *
+     * @param {object} caseFilters parameters to use for filtering case types.
      * @returns {Promise} promise
      */
-    function getCaseTypes () {
+    function loadCaseTypes (caseFilters) {
       var params = {
         sequential: 1,
-        case_type_category: $scope.caseFilter['case_type_id.case_type_category'],
-        id: $scope.caseFilter.case_type_id,
+        case_type_category: caseFilters['case_type_id.case_type_category'],
+        id: caseFilters.case_type_id,
         is_active: 1
       };
 
       return crmApi('CaseType', 'get', params)
         .then(function (data) {
           $scope.caseTypes = data.values;
-          $scope.caseTypesLength = _.size($scope.caseTypes);
-          $scope.$emit('civicase::custom-scrollbar::recalculate');
         });
     }
 
