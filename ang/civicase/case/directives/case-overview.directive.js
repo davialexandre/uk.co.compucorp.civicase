@@ -78,26 +78,6 @@
     }
 
     /**
-     * Toggle status visibility.
-     *
-     * @param {document#event:mousedown} $event the toggle DOM event.
-     * @param {number} caseStatusId the id for the case status to hide or show.
-     */
-    function toggleStatusVisibility ($event, caseStatusId) {
-      $scope.hiddenCaseStatuses[caseStatusId] = !$scope.hiddenCaseStatuses[caseStatusId];
-
-      storeHiddenCaseStatuses();
-      $event.stopPropagation();
-    }
-
-    /**
-     * Toggles the visibility of the breakdown dropdown
-     */
-    function toggleBrekdownVisibility () {
-      $scope.showBreakdown = !$scope.showBreakdown;
-    }
-
-    /**
      * Watcher function for caseFilter
      *
      * @param {object} caseFilters parameters to use for filtering the stats data.
@@ -155,6 +135,26 @@
     }
 
     /**
+     * Get Case Types based on filters
+     *
+     * @param {object} caseFilters parameters to use for filtering case types.
+     * @returns {Promise} promise
+     */
+    function loadCaseTypes (caseFilters) {
+      var params = {
+        sequential: 1,
+        case_type_category: caseFilters['case_type_id.case_type_category'],
+        id: caseFilters.case_type_id,
+        is_active: 1
+      };
+
+      return crmApi('CaseType', 'get', params)
+        .then(function (data) {
+          $scope.caseTypes = data.values;
+        });
+    }
+
+    /**
      * Loads from the browser cache the ids of the case status that have been
      * previously hidden and marks them as such.
      */
@@ -187,26 +187,6 @@
     }
 
     /**
-     * Get Case Types based on filters
-     *
-     * @param {object} caseFilters parameters to use for filtering case types.
-     * @returns {Promise} promise
-     */
-    function loadCaseTypes (caseFilters) {
-      var params = {
-        sequential: 1,
-        case_type_category: caseFilters['case_type_id.case_type_category'],
-        id: caseFilters.case_type_id,
-        is_active: 1
-      };
-
-      return crmApi('CaseType', 'get', params)
-        .then(function (data) {
-          $scope.caseTypes = data.values;
-        });
-    }
-
-    /**
      * Stores in the browser cache the id values of the case statuses that have been
      * hidden.
      */
@@ -219,6 +199,26 @@
         .value();
 
       BrowserCache.set(BROWSER_CACHE_IDENTIFIER, hiddenCaseStatusesIds);
+    }
+
+    /**
+     * Toggles the visibility of the breakdown dropdown
+     */
+    function toggleBrekdownVisibility () {
+      $scope.showBreakdown = !$scope.showBreakdown;
+    }
+
+    /**
+     * Toggle status visibility.
+     *
+     * @param {document#event:mousedown} $event the toggle DOM event.
+     * @param {number} caseStatusId the id for the case status to hide or show.
+     */
+    function toggleStatusVisibility ($event, caseStatusId) {
+      $scope.hiddenCaseStatuses[caseStatusId] = !$scope.hiddenCaseStatuses[caseStatusId];
+
+      storeHiddenCaseStatuses();
+      $event.stopPropagation();
     }
   }
 })(angular, CRM.$, CRM._);
