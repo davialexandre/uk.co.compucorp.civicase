@@ -1,11 +1,11 @@
 /* eslint-env jasmine */
-(function ($, _) {
-  describe('CaseOverview', function () {
-    var $compile, $provide, $q, $rootScope, $scope, BrowserCache,
+(($, _) => {
+  describe('CaseOverview', () => {
+    let $compile, $provide, $q, $rootScope, $scope, BrowserCache,
       CasesOverviewStats, crmApi, element, targetElementScope,
       CaseStatus, CaseType, CaseTypeFilterer;
 
-    beforeEach(module('civicase.data', 'civicase', 'civicase.templates', function (_$provide_) {
+    beforeEach(module('civicase.data', 'civicase', 'civicase.templates', (_$provide_) => {
       $provide = _$provide_;
     }));
 
@@ -28,26 +28,26 @@
       spyOn(CaseTypeFilterer, 'filter').and.callThrough();
     }));
 
-    beforeEach(function () {
+    beforeEach(() => {
       $scope.caseStatuses = CaseStatus.getAll();
       $scope.summaryData = [];
     });
 
-    beforeEach(function () {
+    beforeEach(() => {
       listenForCaseOverviewRecalculate();
       compileDirective({});
     });
 
-    describe('compile directive', function () {
-      it('should have class civicase__case-overview-container', function () {
+    describe('compile directive', () => {
+      it('should have class civicase__case-overview-container', () => {
         expect(element.html()).toContain('civicase__case-overview-container');
       });
     });
 
-    describe('Case Types', function () {
+    describe('Case Types', () => {
       let expectedCaseTypes, expectedFilters;
 
-      beforeEach(function () {
+      beforeEach(() => {
         expectedFilters = {
           case_type_category: 'Cases',
           id: { IN: ['1', '2'] }
@@ -66,13 +66,13 @@
         expect(CaseTypeFilterer.filter).toHaveBeenCalledWith(expectedFilters);
       });
 
-      it('stores the filtered case types', function () {
+      it('stores the filtered case types', () => {
         expect(element.isolateScope().caseTypes).toEqual(expectedCaseTypes);
       });
     });
 
-    describe('Case Status Data', function () {
-      beforeEach(function () {
+    describe('Case Status Data', () => {
+      beforeEach(() => {
         crmApi.and.returnValue($q.resolve([CasesOverviewStats]));
         compileDirective({
           caseTypeCategory: 'Cases',
@@ -81,7 +81,7 @@
         });
       });
 
-      it('fetches the case statistics, but shows all case statuses', function () {
+      it('fetches the case statistics, but shows all case statuses', () => {
         expect(crmApi).toHaveBeenCalledWith([['Case', 'getstats', {
           'case_type_id.case_type_category': 'Cases',
           case_type_id: { IN: ['1', '2'] }
@@ -150,13 +150,13 @@
       });
     });
 
-    describe('Case Status visibility', function () {
-      describe('when the component loads', function () {
-        it('requests the case status that are hidden stored in the browser cache', function () {
+    describe('Case Status visibility', () => {
+      describe('when the component loads', () => {
+        it('requests the case status that are hidden stored in the browser cache', () => {
           expect(BrowserCache.get).toHaveBeenCalledWith('civicase.CaseOverview.hiddenCaseStatuses', []);
         });
 
-        it('hides the case statuses marked as hidden by the browser cache', function () {
+        it('hides the case statuses marked as hidden by the browser cache', () => {
           expect(element.isolateScope().hiddenCaseStatuses).toEqual({
             1: true,
             3: true
@@ -164,8 +164,8 @@
         });
       });
 
-      describe('when marking a status as hidden', function () {
-        beforeEach(function () {
+      describe('when marking a status as hidden', () => {
+        beforeEach(() => {
           element.isolateScope().hiddenCaseStatuses = {
             1: true,
             2: false,
@@ -175,13 +175,13 @@
           element.isolateScope().toggleStatusVisibility($.Event(), 2);
         });
 
-        it('stores the hidden case statuses including the new one', function () {
+        it('stores the hidden case statuses including the new one', () => {
           expect(BrowserCache.set).toHaveBeenCalledWith('civicase.CaseOverview.hiddenCaseStatuses', ['1', '2', '3']);
         });
       });
 
-      describe('when marking a status as enabled', function () {
-        beforeEach(function () {
+      describe('when marking a status as enabled', () => {
+        beforeEach(() => {
           element.isolateScope().hiddenCaseStatuses = {
             1: true,
             2: false,
@@ -191,46 +191,46 @@
           element.isolateScope().toggleStatusVisibility($.Event(), 1);
         });
 
-        it('stores the hidden case statuses including the new one', function () {
+        it('stores the hidden case statuses including the new one', () => {
           expect(BrowserCache.set).toHaveBeenCalledWith('civicase.CaseOverview.hiddenCaseStatuses', ['3']);
         });
       });
     });
 
-    describe('when showBreakdown is false', function () {
-      beforeEach(function () {
+    describe('when showBreakdown is false', () => {
+      beforeEach(() => {
         element.isolateScope().showBreakdown = false;
       });
 
-      describe('when toggleBreakdownVisibility is called', function () {
-        beforeEach(function () {
+      describe('when toggleBreakdownVisibility is called', () => {
+        beforeEach(() => {
           element.isolateScope().toggleBreakdownVisibility();
         });
 
-        it('resets showBreakdown to true', function () {
+        it('resets showBreakdown to true', () => {
           expect(element.isolateScope().showBreakdown).toBe(true);
         });
       });
     });
 
-    describe('when showBreakdown is true', function () {
-      beforeEach(function () {
+    describe('when showBreakdown is true', () => {
+      beforeEach(() => {
         element.isolateScope().showBreakdown = true;
       });
 
-      describe('when toggleBreakdownVisibility is called', function () {
-        beforeEach(function () {
+      describe('when toggleBreakdownVisibility is called', () => {
+        beforeEach(() => {
           element.isolateScope().toggleBreakdownVisibility();
         });
 
-        it('resets showBreakdown to false', function () {
+        it('resets showBreakdown to false', () => {
           expect(element.isolateScope().showBreakdown).toBe(false);
         });
       });
     });
 
-    describe('showBreakdown watcher', function () {
-      it('emit called and targetElementScope to be defined', function () {
+    describe('showBreakdown watcher', () => {
+      it('emit called and targetElementScope to be defined', () => {
         expect(targetElementScope).toEqual(element.isolateScope());
       });
     });
@@ -253,7 +253,7 @@
      * Listen for `civicase::custom-scrollbar::recalculate` event
      */
     function listenForCaseOverviewRecalculate () {
-      $rootScope.$on('civicase::custom-scrollbar::recalculate', function (event) {
+      $rootScope.$on('civicase::custom-scrollbar::recalculate', (event) => {
         targetElementScope = event.targetScope;
       });
     }
