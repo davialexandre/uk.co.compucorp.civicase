@@ -121,7 +121,7 @@
         });
       });
 
-      describe('when loading a case type that supports al statuses', () => {
+      describe('when loading a case type that supports all statuses', () => {
         beforeEach(() => {
           const allCaseStatuses = CaseStatus.getAll();
           const caseType = _.sample(CaseType.getAll());
