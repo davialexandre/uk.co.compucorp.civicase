@@ -45,14 +45,17 @@
    * @param {object} BrowserCache the browser cache service reference.
    * @param {object} CaseStatus the case status service reference.
    * @param {object} CaseType the case type service reference.
+   * @param {object} CaseTypeFilterer the case type filterer service reference.
    */
-  function civicaseCaseOverviewController ($scope, crmApi, BrowserCache, CaseStatus, CaseType) {
+  function civicaseCaseOverviewController ($scope, crmApi, BrowserCache, CaseStatus,
+    CaseType, CaseTypeFilterer) {
     var BROWSER_CACHE_IDENTIFIER = 'civicase.CaseOverview.hiddenCaseStatuses';
     var MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN = 1;
     var allCaseStatusNames = _.map(CaseStatus.getAll(), 'name');
     var caseStatusesIndexedByName = _.indexBy(CaseStatus.getAll(), 'name');
 
     $scope.caseStatuses = [];
+    $scope.caseTypes = [];
     $scope.hiddenCaseStatuses = {};
     $scope.summaryData = [];
 
@@ -83,17 +86,16 @@
      * @param {object} caseFilters parameters to use for filtering the stats data.
      */
     function caseFilterWatcher (caseFilters) {
+      var caseStatusNames;
+
+      $scope.caseTypes = getFilteredCaseTypes(caseFilters);
+      caseStatusNames = getCaseStatusNamesBelongingToCaseTypes($scope.caseTypes);
+      $scope.caseStatuses = getSortedCaseStatusesByName(caseStatusNames);
+      $scope.showBreakdown = $scope.caseTypes.length <=
+        MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN;
+
       loadStatsData(caseFilters);
-      loadCaseTypes(caseFilters)
-        .then(function () {
-          var caseStatusNames = getCaseStatusNamesBelongingToCaseTypes($scope.caseTypes);
-
-          $scope.showBreakdown = $scope.caseTypes.length <=
-            MAXIMUM_CASE_TYPES_TO_DISPLAY_BREAKDOWN;
-          $scope.caseStatuses = getSortedCaseStatusesByName(caseStatusNames);
-
-          $scope.$emit('civicase::custom-scrollbar::recalculate');
-        });
+      $scope.$emit('civicase::custom-scrollbar::recalculate');
     }
 
     /**
@@ -120,6 +122,17 @@
     }
 
     /**
+     * @param {object} caseFilters parameters to use for filtering case types.
+     * @returns {object[]} a list of filtered case types.
+     */
+    function getFilteredCaseTypes (caseFilters) {
+      return CaseTypeFilterer.filter({
+        case_type_category: caseFilters['case_type_id.case_type_category'],
+        id: caseFilters.case_type_id
+      });
+    }
+
+    /**
      * @param {string[]} caseStatusNames a list of case status names.
      * @returns {object[]} the full case status details belonging to the
      *   given case status names.
@@ -132,26 +145,6 @@
         .sortBy('weight')
         .indexBy('value')
         .value();
-    }
-
-    /**
-     * Get Case Types based on filters
-     *
-     * @param {object} caseFilters parameters to use for filtering case types.
-     * @returns {Promise} promise
-     */
-    function loadCaseTypes (caseFilters) {
-      var params = {
-        sequential: 1,
-        case_type_category: caseFilters['case_type_id.case_type_category'],
-        id: caseFilters.case_type_id,
-        is_active: 1
-      };
-
-      return crmApi('CaseType', 'get', params)
-        .then(function (data) {
-          $scope.caseTypes = data.values;
-        });
     }
 
     /**

@@ -3,14 +3,14 @@
   describe('CaseOverview', function () {
     var $compile, $provide, $q, $rootScope, $scope, BrowserCache,
       CasesOverviewStats, crmApi, element, targetElementScope,
-      CaseStatus, CaseType;
+      CaseStatus, CaseType, CaseTypeFilterer;
 
     beforeEach(module('civicase.data', 'civicase', 'civicase.templates', function (_$provide_) {
       $provide = _$provide_;
     }));
 
     beforeEach(inject(function (_$compile_, _$q_, _$rootScope_, BrowserCacheMock,
-      _crmApi_, _CasesOverviewStatsData_, _CaseStatus_, _CaseType_) {
+      _crmApi_, _CasesOverviewStatsData_, _CaseStatus_, _CaseType_, _CaseTypeFilterer_) {
       $compile = _$compile_;
       $q = _$q_;
       $rootScope = _$rootScope_;
@@ -20,10 +20,12 @@
       BrowserCache = BrowserCacheMock;
       CaseStatus = _CaseStatus_;
       CaseType = _CaseType_;
+      CaseTypeFilterer = _CaseTypeFilterer_;
 
       BrowserCache.get.and.returnValue([1, 3]);
       $provide.value('BrowserCache', BrowserCache);
       crmApi.and.returnValue($q.resolve([CasesOverviewStats]));
+      spyOn(CaseTypeFilterer, 'filter').and.callThrough();
     }));
 
     beforeEach(function () {
@@ -43,18 +45,29 @@
     });
 
     describe('Case Types', function () {
+      let expectedCaseTypes, expectedFilters;
+
       beforeEach(function () {
+        expectedFilters = {
+          case_type_category: 'Cases',
+          id: { IN: ['1', '2'] }
+        };
+
         crmApi.and.returnValue($q.resolve([CasesOverviewStats]));
-        compileDirective({ caseTypeCategory: 'cases', caseTypeID: [1, 2] });
+        expectedCaseTypes = CaseTypeFilterer.filter(expectedFilters);
+        CaseTypeFilterer.filter.calls.reset();
+        compileDirective({
+          caseTypeCategory: 'Cases',
+          caseTypeID: { IN: ['1', '2'] }
+        });
       });
 
-      it('fetches the active case types', function () {
-        expect(crmApi).toHaveBeenCalledWith('CaseType', 'get', {
-          sequential: 1,
-          case_type_category: 'cases',
-          id: [1, 2],
-          is_active: 1
-        });
+      it('passes the filter parameters to the case type filterer', () => {
+        expect(CaseTypeFilterer.filter).toHaveBeenCalledWith(expectedFilters);
+      });
+
+      it('stores the filtered case types', function () {
+        expect(element.isolateScope().caseTypes).toEqual(expectedCaseTypes);
       });
     });
 
@@ -62,16 +75,16 @@
       beforeEach(function () {
         crmApi.and.returnValue($q.resolve([CasesOverviewStats]));
         compileDirective({
-          caseTypeCategory: 'cases',
-          caseTypeID: [1, 2],
+          caseTypeCategory: 'Cases',
+          caseTypeID: { IN: ['1', '2'] },
           status_id: '1'
         });
       });
 
       it('fetches the case statistics, but shows all case statuses', function () {
         expect(crmApi).toHaveBeenCalledWith([['Case', 'getstats', {
-          'case_type_id.case_type_category': 'cases',
-          case_type_id: [1, 2]
+          'case_type_id.case_type_category': 'Cases',
+          case_type_id: { IN: ['1', '2'] }
         }]]);
       });
     });
