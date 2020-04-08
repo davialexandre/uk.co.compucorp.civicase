@@ -112,9 +112,7 @@
     function getCaseStatusNamesBelongingToCaseTypes (caseTypes) {
       return _.chain(caseTypes)
         .map(function (caseType) {
-          return caseType.definition.statuses
-            ? caseType.definition.statuses
-            : allCaseStatusNames;
+          return caseType.definition.statuses || allCaseStatusNames;
         })
         .flatten()
         .unique()
