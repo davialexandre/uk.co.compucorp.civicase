@@ -3,6 +3,7 @@
 
   var caseTypesMock = {
     1: {
+      id: '1',
       name: 'housing_support',
       title: 'Housing Support',
       description: 'Help homeless individuals obtain temporary and long-term housing',
@@ -198,6 +199,7 @@
       case_type_category: '1'
     },
     2: {
+      id: '2',
       name: 'adult_day_care_referral',
       title: 'Adult Day Care Referral',
       description: 'Arranging adult day care for senior individuals',
