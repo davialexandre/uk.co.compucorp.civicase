@@ -32,7 +32,8 @@ class CRM_Civicase_Helper_CaseCategory {
 
         return $caseTypeCategories[$caseCategoryId];
       }
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       return NULL;
     }
 
@@ -85,22 +86,6 @@ class CRM_Civicase_Helper_CaseCategory {
   }
 
   /**
-   * Returns the case types for the cases category.
-   *
-   * @return array
-   *   Array of Case Types indexed by Id.
-   */
-  public static function getCaseTypesForCase() {
-    $result = civicrm_api3('CaseType', 'get', [
-      'sequential' => 1,
-      'return' => ['title', 'id'],
-      'case_type_category' => self::CASE_TYPE_CATEGORY_NAME,
-    ]);
-
-    return array_column($result['values'], 'title', 'id');
-  }
-
-  /**
    * Returns the case type category word replacements.
    *
    * @param string $caseTypeCategoryName
@@ -117,7 +102,8 @@ class CRM_Civicase_Helper_CaseCategory {
         'name' => $optionName,
       ]);
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       if (!$caseTypeCategoryName || strtolower($caseTypeCategoryName) == 'cases') {
         return [];
       }
