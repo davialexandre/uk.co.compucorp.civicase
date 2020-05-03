@@ -1,4 +1,4 @@
-(function (_, angular, checkPerm, loadForm, getCrmUrl) {
+(function (angular) {
   var module = angular.module('civicase');
 
   module.controller('AddCaseDashboardActionButtonController', AddCaseDashboardActionButtonController);
@@ -44,4 +44,4 @@
       $window.location.href = response.userContext;
     }
   }
-})(CRM._, angular, CRM.checkPerm, CRM.loadForm, CRM.url);
+})(angular);
