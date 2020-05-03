@@ -50,11 +50,12 @@
         $scope.clickHandler();
       });
 
-      describe('when the case response contains a user context URL', () => {
+      describe('when the case response contains a user context URL and the user clicked on "Save"', () => {
         let expectedUrl;
 
         beforeEach(() => {
           addCaseCallback(mockEvent, {
+            buttonName: 'upload',
             userContext: '/expected-url'
           });
 
@@ -69,6 +70,19 @@
       describe('when the case response does not contain a user context URL', () => {
         beforeEach(() => {
           addCaseCallback(mockEvent, {});
+        });
+
+        it('does not redirect the user', () => {
+          expect($window.location.href).toBe('');
+        });
+      });
+
+      describe('when the case response contains a user context URL, but the "Save and New" was clicked', () => {
+        beforeEach(() => {
+          addCaseCallback(mockEvent, {
+            buttonName: 'upload_new',
+            userContext: '/some-url'
+          });
         });
 
         it('does not redirect the user', () => {

@@ -37,7 +37,10 @@
      * @param {object} response add case form response.
      */
     function redirectToUserContext (event, response) {
-      if (!response.userContext) {
+      var hasNoUserContext = !response.userContext;
+      var isCreatingMoreCases = response.buttonName === 'upload_new';
+
+      if (hasNoUserContext || isCreatingMoreCases) {
         return;
       }
 

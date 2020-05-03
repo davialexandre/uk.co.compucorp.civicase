@@ -48,4 +48,5 @@ class CRM_Civicase_Hook_PostProcess_RedirectToCaseDetails {
 
     return $isCaseForm && $isAddAction && $isNotAddingMoreCases;
   }
+
 }
