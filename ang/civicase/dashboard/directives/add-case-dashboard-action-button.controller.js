@@ -7,11 +7,12 @@
    * Add Case Dashboard Action Button Controller
    *
    * @param {object} $scope scope object
+   * @param {object} $window window object
    * @param {object} ts ts
    * @param {object} AddCase Add Case Service
    * @param {string} currentCaseCategory the current case category name
    */
-  function AddCaseDashboardActionButtonController ($scope, ts, AddCase,
+  function AddCaseDashboardActionButtonController ($scope, $window, ts, AddCase,
     currentCaseCategory) {
     $scope.ts = ts;
 
@@ -23,8 +24,24 @@
      */
     function clickHandler () {
       AddCase.clickHandler({
+        callbackFn: redirectToUserContext,
         caseTypeCategoryName: currentCaseCategory
       });
+    }
+
+    /**
+     * Redirects the user to the user context as provided by the case form
+     * response.
+     *
+     * @param {object} event add case form event reference.
+     * @param {object} response add case form response.
+     */
+    function redirectToUserContext (event, response) {
+      if (!response.userContext) {
+        return;
+      }
+
+      $window.location.href = response.userContext;
     }
   }
 })(CRM._, angular, CRM.checkPerm, CRM.loadForm, CRM.url);

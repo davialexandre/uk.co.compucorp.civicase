@@ -2,16 +2,23 @@
 
 (($) => {
   describe('AddCaseDashboardActionButtonController', () => {
-    let $rootScope, $scope, $controller, AddCase, currentCaseCategory;
+    let $rootScope, $scope, $controller, $window, AddCase, currentCaseCategory;
 
-    beforeEach(module('civicase-base', 'civicase'));
+    beforeEach(module('civicase-base', 'civicase', ($provide) => {
+      $window = { location: { href: '' } };
+
+      $provide.value('$window', $window);
+    }));
+
+    beforeEach(() => {
+      injectDependencies();
+      spyOn(AddCase, 'isVisible');
+      spyOn(AddCase, 'clickHandler');
+      initController();
+    });
 
     describe('Button Visibility', () => {
       beforeEach(() => {
-        injectDependencies();
-        spyOn(AddCase, 'isVisible');
-        initController();
-
         $scope.isVisible();
       });
 
@@ -22,16 +29,50 @@
 
     describe('Click Event', () => {
       beforeEach(() => {
-        injectDependencies();
-        spyOn(AddCase, 'clickHandler');
-        initController();
-
         $scope.clickHandler();
       });
 
       it('creates a new case', () => {
-        expect(AddCase.clickHandler).toHaveBeenCalledWith({
+        expect(AddCase.clickHandler).toHaveBeenCalledWith(jasmine.objectContaining({
           caseTypeCategoryName: currentCaseCategory
+        }));
+      });
+    });
+
+    describe('Redirecting to the user context', () => {
+      let addCaseCallback;
+      const mockEvent = $.Event();
+
+      beforeEach(() => {
+        AddCase.clickHandler.and.callFake((addCaseParams) => {
+          addCaseCallback = addCaseParams.callbackFn;
+        });
+        $scope.clickHandler();
+      });
+
+      describe('when the case response contains a user context URL', () => {
+        let expectedUrl;
+
+        beforeEach(() => {
+          addCaseCallback(mockEvent, {
+            userContext: '/expected-url'
+          });
+
+          expectedUrl = '/expected-url';
+        });
+
+        it('redirects the user the user context URL provided by the response', () => {
+          expect($window.location.href).toBe(expectedUrl);
+        });
+      });
+
+      describe('when the case response does not contain a user context URL', () => {
+        beforeEach(() => {
+          addCaseCallback(mockEvent, {});
+        });
+
+        it('does not redirect the user', () => {
+          expect($window.location.href).toBe('');
         });
       });
     });
