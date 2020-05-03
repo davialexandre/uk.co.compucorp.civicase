@@ -2,7 +2,7 @@
 
 (($) => {
   describe('AddCaseDashboardActionButtonController', () => {
-    let $location, $rootScope, $scope, $controller, AddCase;
+    let $rootScope, $scope, $controller, AddCase, currentCaseCategory;
 
     beforeEach(module('civicase-base', 'civicase'));
 
@@ -24,9 +24,6 @@
       beforeEach(() => {
         injectDependencies();
         spyOn(AddCase, 'clickHandler');
-        spyOn($location, 'search').and.returnValue({
-          case_type_category: 'cases'
-        });
         initController();
 
         $scope.clickHandler();
@@ -34,7 +31,7 @@
 
       it('creates a new case', () => {
         expect(AddCase.clickHandler).toHaveBeenCalledWith({
-          caseTypeCategoryName: 'cases'
+          caseTypeCategoryName: currentCaseCategory
         });
       });
     });
@@ -52,11 +49,12 @@
      * Injects and hoists the dependencies used by this spec file.
      */
     function injectDependencies () {
-      inject((_$location_, _$rootScope_, _$controller_, _AddCase_) => {
-        $location = _$location_;
+      inject((_$location_, _$rootScope_, _$controller_, _AddCase_,
+        _currentCaseCategory_) => {
         $controller = _$controller_;
         $rootScope = _$rootScope_;
         AddCase = _AddCase_;
+        currentCaseCategory = _currentCaseCategory_;
       });
     }
   });
