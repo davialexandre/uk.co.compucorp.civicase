@@ -123,8 +123,9 @@ class CRM_Civicase_Hook_PermissionCheck_CaseCategory {
    */
   private function shouldRun($permission, $granted) {
     $defaultCasePermissions = array_column($this->caseCategoryPermission->get(), 'name');
+    $isNotBasicCase = $permission != 'basic case information';
 
-    return in_array($permission, $defaultCasePermissions) && !$granted;
+    return in_array($permission, $defaultCasePermissions) && !$granted && $isNotBasicCase;
   }
 
   /**

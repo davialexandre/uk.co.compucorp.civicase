@@ -53,6 +53,8 @@ function expose_settings(array &$options, array $defaults) {
   $options['allowCaseLocks'] = (bool) Civi::settings()->get('civicaseAllowCaseLocks');
   $options['caseTypeCategoriesWhereUserCanAccessActivities'] =
     CRM_Civicase_Helper_CaseCategory::getWhereUserCanAccessActivities();
+  $options['caseTypeCategoriesWhereUserCanAccessBasicCaseInformation'] =
+    CRM_Civicase_Helper_CaseCategory::getAccessibleCaseTypeCategories();
   $options['currentCaseCategory'] = $defaults['caseCategoryName']
     ? strtolower($defaults['caseCategoryName'])
     : strtolower(CRM_Civicase_Helper_CaseCategory::CASE_TYPE_CATEGORY_NAME);

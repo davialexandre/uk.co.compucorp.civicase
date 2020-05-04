@@ -10,6 +10,8 @@
     var allCaseTypeCategories = civicaseBaseSettings.caseTypeCategories;
     var caseTypeCategoriesWhereUserCanAccessActivities =
     civicaseBaseSettings.caseTypeCategoriesWhereUserCanAccessActivities;
+    var caseTypeCategoriesWhereUserCanAccessBasicCaseInformation =
+    civicaseBaseSettings.caseTypeCategoriesWhereUserCanAccessBasicCaseInformation;
     var activeCaseTypeCategories = _.chain(allCaseTypeCategories)
       .filter(function (caseTypeCategory) {
         return caseTypeCategory.is_active === '1';
@@ -31,7 +33,8 @@
       return {
         getAll: getAll,
         findByName: findByName,
-        getCategoriesWithAccessToActivity: getCategoriesWithAccessToActivity
+        getCategoriesWithAccessToActivity: getCategoriesWithAccessToActivity,
+        getCategoriesWithAccessToBasicCaseInformation: getCategoriesWithAccessToBasicCaseInformation
       };
     }
 
@@ -57,6 +60,16 @@
       return _.filter(allCaseTypeCategories, function (caseTypeCategory) {
         return caseTypeCategoriesWhereUserCanAccessActivities.indexOf(caseTypeCategory.name) !== -1;
       });
+    }
+
+    /**
+     * Get a list of Case type categories of which,
+     * the logged in user can access activities.
+     *
+     * @returns {Array} list of case categories
+     */
+    function getCategoriesWithAccessToBasicCaseInformation () {
+      return caseTypeCategoriesWhereUserCanAccessBasicCaseInformation;
     }
 
     /**
