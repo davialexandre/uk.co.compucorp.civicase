@@ -44,7 +44,7 @@ jobs:
         working-directory: site/web/sites/all/modules/civicrm/tools/extensions
         run: |
             git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git
-            cv en shoreditch, civicase
+            cv en shoreditch civicase
  
 #      - name: Installing CiviCase and its dependencies
 #        run : |
