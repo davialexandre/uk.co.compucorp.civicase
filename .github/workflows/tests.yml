@@ -45,17 +45,8 @@ jobs:
         run: |
             git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git
             cv en shoreditch civicase
- 
-#      - name: Installing CiviCase and its dependencies
-#        run : |
-#          cp -R ../${REPOSITORY_NAME} ${CIVICRM_EXTENSIONS_DIR}
-#          cd ${CIVICRM_EXTENSIONS_DIR} 
-#          git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git 
-#          drush cc all && drush cc civicrm
-#          cv en org.civicrm.shoreditch && cv en uk.co.compucorp.civicase
 
-#      - name: Run phpunit tests
-#        run: | 
-#            cd ${CIVICRM_EXTENSIONS_DIR}/${REPOSITORY_NAME}
-#            phpunit5 
+      - name: Run phpunit tests
+        working-directory: site/web/sites/all/modules/civicrm/tools/extensions
+        run: phpunit5 
 
