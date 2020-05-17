@@ -34,9 +34,10 @@ jobs:
         run : amp config:set --mysql_dsn=mysql://root:root@mysql:3306
       
       - name: Build Drupal site 
-        run: civibuild create drupal-clean --civi-ver ${CIVICRM_CORE} --web-root /drupal-clean 
+        run: civibuild create drupal-clean --civi-ver ${CIVICRM_CORE} --web-root $GITHUB_WORKSPACE/site
 
       - uses: actions/checkout@v2
+        path: site/web/sites/all/modules/civicrm/tools/extensions/
  
 #      - name: Installing CiviCase and its dependencies
 #        run : |
