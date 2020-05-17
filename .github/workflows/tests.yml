@@ -41,7 +41,7 @@ jobs:
             path: site/web/sites/all/modules/civicrm/tools/extensions/civicase
 
       - name: install extension and dependencies
-        working-directory: ./site/web/sites/all/modules/civicrm/tools/extension
+        working-directory: site/web/sites/all/modules/civicrm/tools/extensions
         run: |
             git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git
             cv en shoreditch, civicase
