@@ -37,7 +37,8 @@ jobs:
         run: civibuild create drupal-clean --civi-ver ${CIVICRM_CORE} --web-root $GITHUB_WORKSPACE/site
 
       - uses: actions/checkout@v2
-        path: site/web/sites/all/modules/civicrm/tools/extensions/
+        with:
+            path: site/web/sites/all/modules/civicrm/tools/extensions/
  
 #      - name: Installing CiviCase and its dependencies
 #        run : |
