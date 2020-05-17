@@ -10,6 +10,7 @@ jobs:
     
     env:
       CIVICRM_EXTENSIONS_DIR: site/web/sites/all/modules/civicrm/tools/extensions
+      CIVICASE_DIR: ${{ env.CIVICRM_EXTENSIONS_DIR }}/civicase
     
     services:
       mysql:
@@ -33,15 +34,15 @@ jobs:
 
       - uses: actions/checkout@v2
         with:
-            path: $CIVICRM_EXTENSIONS_DIR/civicase
+            path: ${{ env.CIVICASE_DIR }}
 
       - name: install extension and dependencies
-        working-directory: $CIVICRM_EXTENSIONS_DIR
+        working-directory: ${{ env.CIVICRM_EXTENSIONS_DIR }}
         run: |
             git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git
             cv en shoreditch civicase
 
       - name: Run phpunit tests
-        working-directory: $CIVICRM_EXTENSIONS_DIR/civicase
+        working-directory: ${{ env.CIVICASE_DIR }} 
         run: phpunit5 
 
