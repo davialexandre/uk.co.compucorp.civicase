@@ -1,0 +1,53 @@
+name: Tests
+
+on:
+  pull_request:
+    branches: 
+     - "**"
+
+jobs:   
+  run-unit-tests:
+
+    runs-on: ubuntu-latest
+    container: compucorp/civicrm-buildkit:1.0.0
+    
+    env:
+      REPOSITORY_NAME: ${{ github.event.repository.name }}
+      CIVICRM_CORE: 5.24.6
+      CIVICRM_EXTENSIONS_DIR: /buildkit/civicrm-buildkit/build/drupal-clean/web/sites/all/modules/civicrm/tools/extensions
+    
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+        - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+
+      - name: Config mysql database as per CiviCRM requirement 
+        run: echo "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));" | mysql -u root --password=root --host=mysql
+
+      - name: Config amp
+        run : amp config:set --mysql_dsn=mysql://root:root@mysql:3306
+      
+      - name: Build Drupal site 
+        run: civibuild create drupal-clean --civi-ver ${CIVICRM_CORE} 
+
+      - uses: actions/checkout@v2
+ 
+#      - name: Installing CiviCase and its dependencies
+#        run : |
+#          cp -R ../${REPOSITORY_NAME} ${CIVICRM_EXTENSIONS_DIR}
+#          cd ${CIVICRM_EXTENSIONS_DIR} 
+#          git clone --depth 1 https://github.com/civicrm/org.civicrm.shoreditch.git 
+#          drush cc all && drush cc civicrm
+#          cv en org.civicrm.shoreditch && cv en uk.co.compucorp.civicase
+
+#      - name: Run phpunit tests
+#        run: | 
+#            cd ${CIVICRM_EXTENSIONS_DIR}/${REPOSITORY_NAME}
+#            phpunit5 
+
